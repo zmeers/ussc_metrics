@@ -1,0 +1,537 @@
+---
+title: "Digital and Publications Key Performance Indicators Analysis"
+author: "Zoe Meers"
+date: "25/03/2019"
+output:
+  html_document:
+    toc: true
+    toc_depth: 5
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, fig.width = 8)
+library(ussc)
+library(tidyverse)
+library(janitor)
+library(lubridate)
+library(sjPlot)
+library(sjmisc)
+library(sjlabelled)
+library(here)
+```
+
+```{r}
+kpi_data <- read_rds(here("data/kpi_publications_17_19.RDS")) %>%
+  mutate(pretty_varname = str_wrap(report_title, width = 40))
+```
+
+# Publications 
+
+## Unique page views {.tabset}
+
+### Reports
+
+```{r, fig.height = 16}
+pubs_reports_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type == "Report" &
+               metric %in% c("unique page views")) %>% 
+    filter(!str_detect(report_title, "Revisiting")) %>% 
+    mutate(value = as.numeric(value)) %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+ggplot(pubs_reports_2017_2018_2019) + 
+    geom_line(data=pubs_reports_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("dark blue")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("dark blue")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                       label = c("First\nmonth", 
+                                  "Six months\nout", 
+                                  "One year\nout", 
+                                  "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+   scale_y_continuous(label = scales::unit_format(unit = "K", scale = 1e-3)) +
+    labs(x = NULL,
+         y = "Unique\npage\nviews",
+         title = "Reports")
+
+```
+
+### Polls
+
+```{r, fig.height = 8}
+pubs_polls_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Poll") &
+               metric %in% c("unique page views")) %>% 
+    filter(!str_detect(report_title, "Very legal")) %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+ggplot(pubs_polls_2017_2018_2019) + 
+    geom_line(data=pubs_polls_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                   y = as.numeric(value),
+                   group = report_title),
+               color = ussc_colours("dark blue")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("dark blue")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout", 
+                               "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Unique\npage\nviews",
+         title = "USSC-YouGov Polls")
+```
+
+### Briefs
+
+```{r, fig.height = 14}
+pubs_briefs_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Brief") &
+               metric %in% c("unique page views")) %>% 
+    filter(!str_detect(report_title, "Key"))  %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+  
+
+ggplot(pubs_briefs_2017_2018_2019) + 
+    geom_line(data=pubs_briefs_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                   y = as.numeric(value),
+                   group = report_title),
+               color = ussc_colours("dark blue")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("dark blue")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+   scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout", 
+                               "Eighteen\nmonths out")) +
+    theme(panel.grid.minor  = element_blank(),
+                                   legend.position = 'none',
+                                   axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Unique\npage\nviews",
+         title = "Briefs")
+```
+
+### Debate Papers
+
+```{r, fig.height = 10}
+
+pubs_paper_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Paper") &
+               metric %in% c("unique page views")) %>% 
+    mutate(report_title = str_remove(report_title, "The Debate Papers: "))  %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+ggplot(pubs_paper_2017_2018_2019) + 
+    geom_line(data=pubs_paper_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                   y = as.numeric(value),
+                   group = report_title),
+               color = ussc_colours("dark blue")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("dark blue")) + 
+    theme_ussc() + 
+    facet_wrap(~pretty_varname,
+             ncol = 2) +
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout",
+                               "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Unique\npage\nviews",
+         title = "Debate Papers")
+
+```
+
+
+## Total page views {.tabset}
+
+### Reports
+
+```{r, fig.height = 16}
+pubs_reports_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type == "Report" &
+               metric %in% c("page views")) %>% 
+    filter(!str_detect(report_title, "Revisiting")) %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+ggplot(pubs_reports_2017_2018_2019) + 
+    geom_line(data=pubs_reports_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("red")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("red")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                       label = c("First\nmonth", 
+                                  "Six months\nout", 
+                                  "One year\nout", 
+                                  "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+    scale_y_continuous(label = scales::unit_format(unit = "K", scale = 1e-3)) +
+    labs(x = NULL,
+         y = "Total\npage\nviews",
+         title = "Reports")
+
+```
+
+### Polls
+
+```{r, fig.height = 8}
+pubs_polls_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Poll") &
+               metric %in% c("page views")) %>% 
+    filter(!str_detect(report_title, "Very legal")) %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+ggplot(pubs_polls_2017_2018_2019) + 
+    geom_line(data=pubs_polls_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                   y = as.numeric(value),
+                   group = report_title),
+               color = ussc_colours("red")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("red")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout", 
+                               "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Total\npage\nviews",
+         title = "USSC-YouGov Polls")
+```
+
+### Briefs
+
+```{r, fig.height = 14}
+pubs_briefs_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Brief") &
+               metric %in% c("page views")) %>% 
+    filter(!str_detect(report_title, "Key"))  %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+  
+
+ggplot(pubs_briefs_2017_2018_2019) + 
+    geom_line(data=pubs_briefs_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(aes(x = month, 
+                   y = as.numeric(value)),
+               color = ussc_colours("red")) + 
+    geom_line(aes(x = month, 
+                  y = as.numeric(value),
+                  group = report_title),
+               color = ussc_colours("red")) + 
+    facet_wrap(~pretty_varname,
+               ncol = 2) +
+    theme_ussc() + 
+   scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout", 
+                               "Eighteen\nmonths out")) +
+    theme(panel.grid.minor  = element_blank(),
+                                   legend.position = 'none',
+                                   axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Total\npage\nviews",
+         title = "Briefs")
+```
+
+### Debate Papers
+
+```{r, fig.height = 10}
+
+pubs_paper_2017_2018_2019 <- kpi_data %>% 
+    filter(report_type %in% c("Paper") &
+               metric %in% c("page views")) %>% 
+    mutate(report_title = str_remove(report_title, "The Debate Papers: "))  %>% 
+    group_by(report_title) %>% 
+    mutate(month = row_number()) %>%
+    ungroup() %>% 
+    mutate(nv = pretty_varname)
+
+
+ggplot(pubs_paper_2017_2018_2019, aes(x = month, 
+                   y = as.numeric(value)),
+               color = ussc_colours("red")) + 
+    geom_line(data=pubs_paper_2017_2018_2019 %>% select(month, value, nv), 
+              aes(x=month, y = as.numeric(value), group = nv), 
+              colour = ussc_colours("light grey")) +
+    geom_point(color = ussc_colours("red")) + 
+    geom_line(color = ussc_colours("red")) + 
+    theme_ussc() + 
+    facet_wrap(~pretty_varname,
+             ncol = 2) +
+    scale_x_continuous(breaks= c(1, 6, 12, 18), 
+                     label = c("First\nmonth", 
+                               "Six months\nout", 
+                               "One year\nout",
+                               "Eighteen\nmonths out")) + 
+    theme(panel.grid.minor  = element_blank(),
+          legend.position = 'none',
+          axis.title.y = element_text(angle = 0)) + 
+    labs(x = NULL,
+         y = "Total\npage\nviews",
+         title = "Debate Papers")
+
+```
+
+
+
+
+# Regressions
+
+## lm(page_views_firstmonth ~ women_authors + report_type +  vertical + quantitative_paper + vertical) {.tabset}
+
+
+### First month
+
+
+```{r}
+# lm(page_views_firstmonth ~ author_gender + high_author_pageview + paper_type + quantitative_paper + vertical)
+
+first_month_d1 <- kpi_data %>% 
+    group_by(report_title) %>% 
+    filter(metric == "page views") %>% 
+    slice(1) %>% 
+    ungroup() %>% 
+    mutate(women_authors = ifelse(str_detect(report_authors, 
+                                           c('(Gorana)|
+                                             (Matilda)|
+                                             (Freya)|
+                                             (Zoe)|
+                                             (Madelyn)|
+                                             (Sarah)|
+                                             (Claire)|
+                                             (Elsina)|
+                                             (Sumona)|
+                                             (Elizabeth)')), 1, 0),
+         women_authors = ifelse(str_detect(report_title, 'Australian AgTech'), 1, women_authors),
+         vertical = case_when(
+           str_detect(report_authors, "(Dougal)|
+                      (Ashley)|(Brendan)|
+                      (Madelyn)|(Matilda)|
+                      (David)|(Erum Jilani)|
+                      (Michael Biercuk)") ~ "FPD",
+           str_detect(report_authors, "(Claire)|(Spencer)|
+                      (Justin)|(Nolet)|
+                      (Vafa)|(Don)|
+                      (Anthony)") ~ "I&E",
+           str_detect(report_authors, "(Stephen)|(Jared)") ~ "T&I",
+           str_detect(report_authors, "(Simon)|(Shaun)|
+                      (Elsina)|(Gorana)|
+                      (Charles)|(Elizabeth)|
+                      (Jeffrey)|(Graham)|
+                      (Bruce)") ~ "PSC",
+           str_detect(report_title, "Debate") ~ "Debate Papers"
+         ),
+         quantitative = case_when(
+           str_detect(report_authors, "(Simon)|(Shaun)|
+                      (Luke)|(Zoe)|
+                      (Stephen)") ~ 1,
+           TRUE ~ 0
+         ),
+         page_views = as.numeric(value)) 
+
+kpi_data$report_type <- relevel(as.factor(kpi_data$report_type), ref = "Report")
+#data_17_18_19$all_men <- relevel(as.factor(data_17_18_19$women_authors), ref = 1)
+
+
+
+first_month_m1 <- lm(page_views ~ women_authors + report_type + vertical + quantitative, data = first_month_d1)
+tab_model(first_month_m1)
+
+```
+
+### Three months out 
+
+```{r}
+three_months_d1 <- kpi_data %>% 
+  group_by(report_title) %>% 
+  filter(metric == "page views") %>% 
+  slice(3) %>% 
+  ungroup() %>% 
+  mutate(women_authors = ifelse(str_detect(report_authors, 
+                                           c('(Gorana)|
+                                             (Matilda)|
+                                             (Freya)|
+                                             (Zoe)|
+                                             (Madelyn)|
+                                             (Sarah)|
+                                             (Claire)|
+                                             (Elsina)|
+                                             (Sumona)|
+                                             (Elizabeth)')), 1, 0),
+         women_authors = ifelse(str_detect(report_title, 'Australian AgTech'), 1, women_authors),
+         vertical = case_when(
+           str_detect(report_authors, "(Dougal)|
+                      (Ashley)|(Brendan)|
+                      (Madelyn)|(Matilda)|
+                      (David)|(Erum Jilani)|
+                      (Michael Biercuk)") ~ "FPD",
+           str_detect(report_authors, "(Claire)|(Spencer)|
+                      (Justin)|(Nolet)|
+                      (Vafa)|(Don)|
+                      (Anthony)") ~ "I&E",
+           str_detect(report_authors, "(Stephen)|(Jared)") ~ "T&I",
+           str_detect(report_authors, "(Simon)|(Shaun)|
+                      (Elsina)|(Gorana)|
+                      (Charles)|(Elizabeth)|
+                      (Jeffrey)|(Graham)|
+                      (Bruce)") ~ "PSC",
+           str_detect(report_title, "Debate") ~ "Debate Papers"
+         ),
+         quantitative = case_when(
+           str_detect(report_authors, "(Simon)|(Shaun)|
+                      (Luke)|(Zoe)|
+                      (Stephen)") ~ 1,
+           TRUE ~ 0
+         ),
+         page_views = as.numeric(value)) 
+
+
+three_months_m1 <- lm(page_views ~ women_authors + report_type + vertical + quantitative, data = three_months_d1)
+
+tab_model(three_months_m1)
+```
+
+
+# Website Statistics
+
+
+```{r}
+load(here("data", "digital_kpi_2018.RData"))
+```
+
+```{r}
+kpi_pageviews_section <- kpi_pageviews_section %>% 
+  mutate(section = str_remove(section, "(/)|(/[a-z])")) %>% 
+  mutate(s1 = section)
+
+ggplot(data = kpi_pageviews_section, aes(x = date, y = pageviews)) + 
+  geom_line(data=kpi_pageviews_section %>% select(date, pageviews, s1), 
+            aes(x=date, y=pageviews, group = s1), 
+            colour = ussc_colours("light grey")) +
+  geom_line() + 
+  facet_wrap(~section, 
+             nrow = 3) + 
+  labs(title = "Number of page views per section in 2018",
+       x = NULL,
+       y = NULL) + 
+  theme_ussc()
+```
+
+
+```{r, fig.height = 10}
+kpi_pageviews_people <- kpi_pageviews_people %>% 
+  mutate(s1 = person) %>% 
+  arrange(person, date) %>% 
+  filter(!str_detect(person, "(Thomas-Noone)|
+                     (Jared)|(Madelyn)|
+                     (Lee)|(Shaun)|
+                     (Rodney)|(Dougal)|
+                     (Elizabeth)"))
+
+
+ggplot(data = kpi_pageviews_people, aes(x = date, y = pageviews)) + 
+  geom_line(data=kpi_pageviews_people %>% select(date, pageviews, s1), aes(x=date, y=pageviews, group = s1), 
+            colour = ussc_colours("light grey")) +
+  geom_line() + 
+  facet_wrap(~person, 
+             ncol = 2) + 
+  labs(title = "Number of page views per expert or staff member in 2018",
+       x = NULL,
+       y = NULL) + 
+  theme_ussc()
+```
+
