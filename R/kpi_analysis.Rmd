@@ -18,6 +18,9 @@ library(sjPlot)
 library(sjmisc)
 library(sjlabelled)
 library(here)
+library(fablelite)
+library(fable)
+library(tsibble)
 ```
 
 ```{r}
@@ -46,14 +49,11 @@ ggplot(pubs_reports_2017_2018_2019) +
     geom_line(data=pubs_reports_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                  y = as.numeric(value),
-                  group = report_title),
-               color = ussc_colours("dark blue")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("dark blue")) + 
+               color = ussc_colours("light blue"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -89,14 +89,11 @@ ggplot(pubs_polls_2017_2018_2019) +
     geom_line(data=pubs_polls_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                   y = as.numeric(value),
-                   group = report_title),
-               color = ussc_colours("dark blue")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("dark blue")) + 
+               color = ussc_colours("light blue"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -132,14 +129,11 @@ ggplot(pubs_briefs_2017_2018_2019) +
     geom_line(data=pubs_briefs_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                   y = as.numeric(value),
-                   group = report_title),
-               color = ussc_colours("dark blue")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("dark blue")) + 
+               color = ussc_colours("light blue"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -174,14 +168,11 @@ ggplot(pubs_paper_2017_2018_2019) +
     geom_line(data=pubs_paper_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                   y = as.numeric(value),
-                   group = report_title),
-               color = ussc_colours("dark blue")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("dark blue")) + 
+               color = ussc_colours("light blue"),
+              size = 1.2) + 
     theme_ussc() + 
     facet_wrap(~pretty_varname,
              ncol = 2) +
@@ -218,14 +209,11 @@ ggplot(pubs_reports_2017_2018_2019) +
     geom_line(data=pubs_reports_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                  y = as.numeric(value),
-                  group = report_title),
-               color = ussc_colours("red")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("red")) + 
+               color = ussc_colours("red"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -261,14 +249,11 @@ ggplot(pubs_polls_2017_2018_2019) +
     geom_line(data=pubs_polls_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                   y = as.numeric(value),
-                   group = report_title),
-               color = ussc_colours("red")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("red")) + 
+               color = ussc_colours("red"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -304,13 +289,11 @@ ggplot(pubs_briefs_2017_2018_2019) +
     geom_line(data=pubs_briefs_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
               colour = ussc_colours("light grey")) +
-    geom_point(aes(x = month, 
-                   y = as.numeric(value)),
-               color = ussc_colours("red")) + 
     geom_line(aes(x = month, 
                   y = as.numeric(value),
                   group = report_title),
-               color = ussc_colours("red")) + 
+               color = ussc_colours("red"),
+              size = 1.2) + 
     facet_wrap(~pretty_varname,
                ncol = 2) +
     theme_ussc() + 
@@ -346,9 +329,8 @@ ggplot(pubs_paper_2017_2018_2019, aes(x = month,
                color = ussc_colours("red")) + 
     geom_line(data=pubs_paper_2017_2018_2019 %>% select(month, value, nv), 
               aes(x=month, y = as.numeric(value), group = nv), 
-              colour = ussc_colours("light grey")) +
-    geom_point(color = ussc_colours("red")) + 
-    geom_line(color = ussc_colours("red")) + 
+              colour = ussc_colours("light grey")) + 
+    geom_line(color = ussc_colours("red"), size = 1.2) + 
     theme_ussc() + 
     facet_wrap(~pretty_varname,
              ncol = 2) +
@@ -535,3 +517,33 @@ ggplot(data = kpi_pageviews_people, aes(x = date, y = pageviews)) +
   theme_ussc()
 ```
 
+
+# Forecasts 
+
+# Ideas for forecasting: à demain
+## pooled page view by report type
+
+```{r}
+kpi_my <- kpi_data %>% 
+  filter(metric == "page views") %>% 
+  group_by(tracking_date, report_type) %>% 
+  summarise(value = sum(as.numeric(value))) %>% 
+  ungroup() %>% 
+  as_tsibble(key = id("report_type")) %>% 
+  select(tracking_date, value, report_type) %>% 
+  fable::model(
+    ets = ETS(box_cox(value, 0.3)),
+    arima = ARIMA(log(value)),
+    snaive = SNAIVE(value)
+  ) %>%
+  fable::forecast %>% 
+  fable::autoplot(level = NULL)
+```
+
+
+
+
+
+
+## pooled page view per topic
+## pooled page view per vertical
